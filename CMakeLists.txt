@@ -67,14 +67,29 @@ externalproject_add(ex_collectc
 link_directories("${COLLECTIONSC_PATH}/lib")
 include_directories("${COLLECTIONSC_PATH}/include")
 
+set(GLIBC_PATH "${CMAKE_CURRENT_BINARY_DIR}/glibc")
+externalproject_add(ex_glibc
+  GIT_REPOSITORY "git@github.com:GNOME/glib.git"
+  GIT_TAG "2.63.0"
+  CONFIGURE_COMMAND meson ../ex_glibc
+    --libdir=lib
+    --prefix=${GLIBC_PATH}
+  BUILD_COMMAND ninja -j4
+  INSTALL_COMMAND ninja install
+)
+link_directories("${GLIBC_PATH}/lib/")
+include_directories("${GLIBC_PATH}/lib/glib-2.0/include/")
+include_directories("${GLIBC_PATH}/include/glib-2.0")
+
 
 add_executable(bench_map benchmarks/bench_map.cpp)
-add_dependencies(bench_map ex_benchmark ex_cdcontainers ex_collectc)
+add_dependencies(bench_map ex_benchmark ex_cdcontainers ex_collectc ex_glibc)
 target_link_libraries(
   bench_map
   benchmark
   cdcontainers
   collectc
+  glib-2.0
   ${CMAKE_THREAD_LIBS_INIT}
 )
 

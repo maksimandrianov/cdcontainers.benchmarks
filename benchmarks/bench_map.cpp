@@ -22,6 +22,7 @@ extern "C" {
 #include <cdcontainers/cdc.h>
 #include <collectc/hashtable.h>
 #include <collectc/treetable.h>
+#include <gmodule.h>
 }
 
 #include <benchmark/benchmark.h>
@@ -89,6 +90,11 @@ static int IsEquil(const void *lhs, const void *rhs)
 }
 
 static size_t Hash(const void *key) { return cdc_hash_int(CDC_TO_INT(key)); }
+
+static unsigned int GHash(const void *key)
+{
+  return static_cast<unsigned int>(cdc_hash_int(CDC_TO_INT(key)));
+}
 
 static size_t CcHash(const void *key, int /* l */, uint32_t /* seed */)
 {
@@ -196,6 +202,42 @@ static void BM_Insert_CC_TreeTable(benchmark::State &state)
 }
 S(BENCHMARK(BM_Insert_CC_TreeTable))
 
+static void BM_Insert_GLib_Tree(benchmark::State &state)
+{
+  for (auto _ : state) {
+    state.PauseTiming();
+    GTree *tree = g_tree_new(CcCmp);
+    state.ResumeTiming();
+
+    for (int j = 0; j < state.range(0); ++j) {
+      g_tree_insert(tree, CDC_FROM_INT(GetRandom()), nullptr);
+    }
+
+    state.PauseTiming();
+    g_tree_destroy(tree);
+    state.ResumeTiming();
+  }
+}
+S(BENCHMARK(BM_Insert_GLib_Tree))
+
+static void BM_Insert_GLib_HashTable(benchmark::State &state)
+{
+  for (auto _ : state) {
+    state.PauseTiming();
+    GHashTable *table = g_hash_table_new(GHash, IsEquil);
+    state.ResumeTiming();
+
+    for (int j = 0; j < state.range(0); ++j) {
+      g_hash_table_insert(table, CDC_FROM_INT(GetRandom()), nullptr);
+    }
+
+    state.PauseTiming();
+    g_hash_table_destroy(table);
+    state.ResumeTiming();
+  }
+}
+S(BENCHMARK(BM_Insert_GLib_HashTable))
+
 // Remove benchmarks:
 template <class Container>
 static void BM_Remove_Cpp(benchmark::State &state)
@@ -295,6 +337,46 @@ static void BM_Remove_CC_TreeTable(benchmark::State &state)
   }
 }
 S(BENCHMARK(BM_Remove_CC_TreeTable))
+
+static void BM_Remove_GLib_Tree(benchmark::State &state)
+{
+  for (auto _ : state) {
+    state.PauseTiming();
+    GTree *tree = g_tree_new(CcCmp);
+    RemoveSet rs(static_cast<size_t>(state.range(0)));
+    rs.ForEach([&](auto v) { g_tree_insert(tree, CDC_FROM_INT(v), nullptr); });
+    state.ResumeTiming();
+
+    for (int j = 0; j < state.range(0); ++j) {
+      g_tree_remove(tree, CDC_FROM_INT(rs.Get()));
+    }
+
+    state.PauseTiming();
+    g_tree_destroy(tree);
+    state.ResumeTiming();
+  }
+}
+S(BENCHMARK(BM_Remove_GLib_Tree))
+
+static void BM_Remove_GLib_HashTable(benchmark::State &state)
+{
+  for (auto _ : state) {
+    state.PauseTiming();
+    GHashTable *table = g_hash_table_new(GHash, IsEquil);
+    RemoveSet rs(static_cast<size_t>(state.range(0)));
+    rs.ForEach([&](auto v) { g_hash_table_insert(table, CDC_FROM_INT(v), nullptr); });
+    state.ResumeTiming();
+
+    for (int j = 0; j < state.range(0); ++j) {
+      g_hash_table_remove(table, CDC_FROM_INT(rs.Get()));
+    }
+
+    state.PauseTiming();
+    g_hash_table_destroy(table);
+    state.ResumeTiming();
+  }
+}
+S(BENCHMARK(BM_Remove_GLib_HashTable))
 
 // Search benchmarks:
 template <class Container>
@@ -401,5 +483,47 @@ static void BM_Search_CC_TreeTable(benchmark::State &state)
   }
 }
 S(BENCHMARK(BM_Search_CC_TreeTable))
+
+static void BM_Search_GLib_Tree(benchmark::State &state)
+{
+  for (auto _ : state) {
+    state.PauseTiming();
+    GTree *tree = g_tree_new(CcCmp);
+    RemoveSet rs(static_cast<size_t>(state.range(0)));
+    rs.ForEach([&](auto v) { g_tree_insert(tree, CDC_FROM_INT(v), nullptr); });
+    state.ResumeTiming();
+
+    for (int j = 0; j < state.range(0); ++j) {
+      benchmark::DoNotOptimize(
+          g_tree_lookup(tree, CDC_FROM_INT(rs.Get())));
+    }
+
+    state.PauseTiming();
+    g_tree_destroy(tree);
+    state.ResumeTiming();
+  }
+}
+S(BENCHMARK(BM_Search_GLib_Tree))
+
+static void BM_Search_GLib_HashTable(benchmark::State &state)
+{
+  for (auto _ : state) {
+    state.PauseTiming();
+    GHashTable *table = g_hash_table_new(GHash, IsEquil);
+    RemoveSet rs(static_cast<size_t>(state.range(0)));
+    rs.ForEach([&](auto v) { g_hash_table_insert(table, CDC_FROM_INT(v), nullptr); });
+    state.ResumeTiming();
+
+    for (int j = 0; j < state.range(0); ++j) {
+      benchmark::DoNotOptimize(
+          g_hash_table_lookup(table, CDC_FROM_INT(rs.Get())));
+    }
+
+    state.PauseTiming();
+    g_hash_table_destroy(table);
+    state.ResumeTiming();
+  }
+}
+S(BENCHMARK(BM_Search_GLib_HashTable))
 
 BENCHMARK_MAIN();
