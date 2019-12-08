@@ -16,7 +16,7 @@ mkdir -p $BUILD_DIR && \
     cmake .. && \
     make all -j4
 
-cd BASE_DIR
+cd $BASE_DIR
 pip install -r "$BASE_DIR/requirements.txt"
 
 # Run benchmarks.
