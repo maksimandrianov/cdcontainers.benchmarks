@@ -24,7 +24,7 @@ for f in ${BUILD_DIR}/bench_* ; do
     if [[ -x ${f} ]]; then
         BENCHMARK=${f}
         OUT_FILENAME="${BUILD_DIR}/_$(basename ${BENCHMARK}).json"
-        ${BENCHMARK} --benchmark_format=json >${OUT_FILENAME}
+        ${BENCHMARK} --v=2 --benchmark_format=json >${OUT_FILENAME}
         "${BASE_DIR}/plot.py" ${OUT_FILENAME}
      fi
 done

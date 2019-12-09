@@ -23,10 +23,10 @@
 #include <cstdint>
 #include <vector>
 
-#define S(benchmark)                        \
-  benchmark->RangeMultiplier(2)             \
-      ->Range(1 << 2, 1 << 15)              \
-      ->DenseRange(1 << 16, 1 << 20, 65536) \
+#define S(benchmark)                          \
+  benchmark->RangeMultiplier(2)               \
+      ->Range(1 << 2, 1 << 12)                \
+      ->DenseRange(1 << 13, 1 << 17, 1 << 14) \
       ->Threads(4);
 
 class RandomSet

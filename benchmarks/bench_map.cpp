@@ -102,7 +102,7 @@ static void BM_Insert_CcHashTable(benchmark::State &state)
     state.ResumeTiming();
   }
 }
-S(BENCHMARK(BM_Insert_CcHashTable))
+S(BENCHMARK(BM_Insert_CcHashTable));
 
 static void BM_Insert_CcTreeTable(benchmark::State &state)
 {
@@ -124,7 +124,7 @@ static void BM_Insert_CcTreeTable(benchmark::State &state)
     state.ResumeTiming();
   }
 }
-S(BENCHMARK(BM_Insert_CcTreeTable))
+S(BENCHMARK(BM_Insert_CcTreeTable));
 
 static void BM_Insert_GTree(benchmark::State &state)
 {
@@ -142,7 +142,7 @@ static void BM_Insert_GTree(benchmark::State &state)
     state.ResumeTiming();
   }
 }
-S(BENCHMARK(BM_Insert_GTree))
+S(BENCHMARK(BM_Insert_GTree));
 
 static void BM_Insert_GHashTable(benchmark::State &state)
 {
@@ -160,7 +160,7 @@ static void BM_Insert_GHashTable(benchmark::State &state)
     state.ResumeTiming();
   }
 }
-S(BENCHMARK(BM_Insert_GHashTable))
+S(BENCHMARK(BM_Insert_GHashTable));
 
 // Remove benchmarks:
 template <class Container>
@@ -240,7 +240,7 @@ static void BM_Remove_CcHashTable(benchmark::State &state)
     state.ResumeTiming();
   }
 }
-S(BENCHMARK(BM_Remove_CcHashTable))
+S(BENCHMARK(BM_Remove_CcHashTable));
 
 static void BM_Remove_CcTreeTable(benchmark::State &state)
 {
@@ -264,7 +264,7 @@ static void BM_Remove_CcTreeTable(benchmark::State &state)
     state.ResumeTiming();
   }
 }
-S(BENCHMARK(BM_Remove_CcTreeTable))
+S(BENCHMARK(BM_Remove_CcTreeTable));
 
 static void BM_Remove_GTree(benchmark::State &state)
 {
@@ -284,7 +284,7 @@ static void BM_Remove_GTree(benchmark::State &state)
     state.ResumeTiming();
   }
 }
-S(BENCHMARK(BM_Remove_GTree))
+S(BENCHMARK(BM_Remove_GTree));
 
 static void BM_Remove_GHashTable(benchmark::State &state)
 {
@@ -305,7 +305,7 @@ static void BM_Remove_GHashTable(benchmark::State &state)
     state.ResumeTiming();
   }
 }
-S(BENCHMARK(BM_Remove_GHashTable))
+S(BENCHMARK(BM_Remove_GHashTable));
 
 // Search benchmarks:
 template <class Container>
@@ -389,7 +389,7 @@ static void BM_Search_CcHashTable(benchmark::State &state)
     state.ResumeTiming();
   }
 }
-S(BENCHMARK(BM_Search_CcHashTable))
+S(BENCHMARK(BM_Search_CcHashTable));
 
 static void BM_Search_CcTreeTable(benchmark::State &state)
 {
@@ -415,7 +415,7 @@ static void BM_Search_CcTreeTable(benchmark::State &state)
     state.ResumeTiming();
   }
 }
-S(BENCHMARK(BM_Search_CcTreeTable))
+S(BENCHMARK(BM_Search_CcTreeTable));
 
 static void BM_Search_GTree(benchmark::State &state)
 {
@@ -435,7 +435,7 @@ static void BM_Search_GTree(benchmark::State &state)
     state.ResumeTiming();
   }
 }
-S(BENCHMARK(BM_Search_GTree))
+S(BENCHMARK(BM_Search_GTree));
 
 static void BM_Search_GHashTable(benchmark::State &state)
 {
@@ -457,6 +457,6 @@ static void BM_Search_GHashTable(benchmark::State &state)
     state.ResumeTiming();
   }
 }
-S(BENCHMARK(BM_Search_GHashTable))
+S(BENCHMARK(BM_Search_GHashTable));
 
 BENCHMARK_MAIN();

@@ -48,7 +48,7 @@ static void BM_PushBack_CppDeque(benchmark::State &state)
     state.ResumeTiming();
   }
 }
-S(BENCHMARK(BM_PushBack_CppDeque))
+S(BENCHMARK(BM_PushBack_CppDeque));
 
 static void BM_PushBack_CdcDeque(benchmark::State &state)
 {
@@ -67,7 +67,7 @@ static void BM_PushBack_CdcDeque(benchmark::State &state)
     state.ResumeTiming();
   }
 }
-S(BENCHMARK(BM_PushBack_CdcDeque))
+S(BENCHMARK(BM_PushBack_CdcDeque));
 
 static void BM_PushBack_CcDeque(benchmark::State &state)
 {
@@ -86,7 +86,7 @@ static void BM_PushBack_CcDeque(benchmark::State &state)
     state.ResumeTiming();
   }
 }
-S(BENCHMARK(BM_PushBack_CcDeque))
+S(BENCHMARK(BM_PushBack_CcDeque));
 
 static void BM_PushBack_GQueue(benchmark::State &state)
 {
@@ -104,7 +104,7 @@ static void BM_PushBack_GQueue(benchmark::State &state)
     state.ResumeTiming();
   }
 }
-S(BENCHMARK(BM_PushBack_GQueue))
+S(BENCHMARK(BM_PushBack_GQueue));
 
 // Push front benchmarks:
 static void BM_PushFront_CppDeque(benchmark::State &state)
@@ -123,7 +123,7 @@ static void BM_PushFront_CppDeque(benchmark::State &state)
     state.ResumeTiming();
   }
 }
-S(BENCHMARK(BM_PushFront_CppDeque))
+S(BENCHMARK(BM_PushFront_CppDeque));
 
 static void BM_PushFront_CdcDeque(benchmark::State &state)
 {
@@ -142,7 +142,7 @@ static void BM_PushFront_CdcDeque(benchmark::State &state)
     state.ResumeTiming();
   }
 }
-S(BENCHMARK(BM_PushFront_CdcDeque))
+S(BENCHMARK(BM_PushFront_CdcDeque));
 
 static void BM_PushFront_CcDeque(benchmark::State &state)
 {
@@ -161,7 +161,7 @@ static void BM_PushFront_CcDeque(benchmark::State &state)
     state.ResumeTiming();
   }
 }
-S(BENCHMARK(BM_PushFront_CcDeque))
+S(BENCHMARK(BM_PushFront_CcDeque));
 
 static void BM_PushFront_GQueue(benchmark::State &state)
 {
@@ -179,7 +179,7 @@ static void BM_PushFront_GQueue(benchmark::State &state)
     state.ResumeTiming();
   }
 }
-S(BENCHMARK(BM_PushFront_GQueue))
+S(BENCHMARK(BM_PushFront_GQueue));
 
 // Insert rand pos benchmarks:
 static void BM_InsertRandPos_CppDeque(benchmark::State &state)
@@ -200,7 +200,7 @@ static void BM_InsertRandPos_CppDeque(benchmark::State &state)
     state.ResumeTiming();
   }
 }
-S(BENCHMARK(BM_InsertRandPos_CppDeque))
+S(BENCHMARK(BM_InsertRandPos_CppDeque));
 
 static void BM_InsertRandPos_CdcDeque(benchmark::State &state)
 {
@@ -221,7 +221,7 @@ static void BM_InsertRandPos_CdcDeque(benchmark::State &state)
     state.ResumeTiming();
   }
 }
-S(BENCHMARK(BM_InsertRandPos_CdcDeque))
+S(BENCHMARK(BM_InsertRandPos_CdcDeque));
 
 static void BM_InsertRandPos_CcDeque(benchmark::State &state)
 {
@@ -244,7 +244,7 @@ static void BM_InsertRandPos_CcDeque(benchmark::State &state)
     state.ResumeTiming();
   }
 }
-S(BENCHMARK(BM_InsertRandPos_CcDeque))
+S(BENCHMARK(BM_InsertRandPos_CcDeque));
 
 static void BM_InsertRandPos_GQueue(benchmark::State &state)
 {
@@ -267,6 +267,6 @@ static void BM_InsertRandPos_GQueue(benchmark::State &state)
     state.ResumeTiming();
   }
 }
-S(BENCHMARK(BM_InsertRandPos_GQueue))
+S(BENCHMARK(BM_InsertRandPos_GQueue));
 
 BENCHMARK_MAIN();

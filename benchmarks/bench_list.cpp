@@ -47,7 +47,7 @@ static void BM_PushBack_CppList(benchmark::State &state)
     state.ResumeTiming();
   }
 }
-S(BENCHMARK(BM_PushBack_CppList))
+S(BENCHMARK(BM_PushBack_CppList));
 
 static void BM_PushBack_CdcList(benchmark::State &state)
 {
@@ -66,7 +66,7 @@ static void BM_PushBack_CdcList(benchmark::State &state)
     state.ResumeTiming();
   }
 }
-S(BENCHMARK(BM_PushBack_CdcList))
+S(BENCHMARK(BM_PushBack_CdcList));
 
 static void BM_PushBack_CcList(benchmark::State &state)
 {
@@ -85,7 +85,7 @@ static void BM_PushBack_CcList(benchmark::State &state)
     state.ResumeTiming();
   }
 }
-S(BENCHMARK(BM_PushBack_CcList))
+S(BENCHMARK(BM_PushBack_CcList));
 
 static void BM_PushBack_GList(benchmark::State &state)
 {
@@ -103,7 +103,7 @@ static void BM_PushBack_GList(benchmark::State &state)
     state.ResumeTiming();
   }
 }
-S(BENCHMARK(BM_PushBack_GList))
+S(BENCHMARK(BM_PushBack_GList));
 
 // Push front benchmarks:
 static void BM_PushFront_CppList(benchmark::State &state)
@@ -122,7 +122,7 @@ static void BM_PushFront_CppList(benchmark::State &state)
     state.ResumeTiming();
   }
 }
-S(BENCHMARK(BM_PushFront_CppList))
+S(BENCHMARK(BM_PushFront_CppList));
 
 static void BM_PushFront_CdcList(benchmark::State &state)
 {
@@ -141,7 +141,7 @@ static void BM_PushFront_CdcList(benchmark::State &state)
     state.ResumeTiming();
   }
 }
-S(BENCHMARK(BM_PushFront_CdcList))
+S(BENCHMARK(BM_PushFront_CdcList));
 
 static void BM_PushFront_CcList(benchmark::State &state)
 {
@@ -160,7 +160,7 @@ static void BM_PushFront_CcList(benchmark::State &state)
     state.ResumeTiming();
   }
 }
-S(BENCHMARK(BM_PushFront_CcList))
+S(BENCHMARK(BM_PushFront_CcList));
 
 static void BM_PushFront_GList(benchmark::State &state)
 {
@@ -178,7 +178,7 @@ static void BM_PushFront_GList(benchmark::State &state)
     state.ResumeTiming();
   }
 }
-S(BENCHMARK(BM_PushFront_GList))
+S(BENCHMARK(BM_PushFront_GList));
 
 // Insert mid benchmarks:
 static void BM_InsertMid_CppList(benchmark::State &state)
@@ -198,7 +198,7 @@ static void BM_InsertMid_CppList(benchmark::State &state)
     state.ResumeTiming();
   }
 }
-S(BENCHMARK(BM_InsertMid_CppList))
+S(BENCHMARK(BM_InsertMid_CppList));
 
 static void BM_InsertMid_CdcList(benchmark::State &state)
 {
@@ -224,7 +224,7 @@ static void BM_InsertMid_CdcList(benchmark::State &state)
     state.ResumeTiming();
   }
 }
-S(BENCHMARK(BM_InsertMid_CdcList))
+S(BENCHMARK(BM_InsertMid_CdcList));
 
 static void BM_InsertMid_CcList(benchmark::State &state)
 {
@@ -253,7 +253,7 @@ static void BM_InsertMid_CcList(benchmark::State &state)
     state.ResumeTiming();
   }
 }
-S(BENCHMARK(BM_InsertMid_CcList))
+S(BENCHMARK(BM_InsertMid_CcList));
 
 static void BM_InsertMid_GList(benchmark::State &state)
 {
@@ -275,6 +275,6 @@ static void BM_InsertMid_GList(benchmark::State &state)
     state.ResumeTiming();
   }
 }
-S(BENCHMARK(BM_InsertMid_GList))
+S(BENCHMARK(BM_InsertMid_GList));
 
 BENCHMARK_MAIN();
