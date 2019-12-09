@@ -39,12 +39,16 @@ static void BM_Insert_Cpp(benchmark::State &state)
   void *value = nullptr;
   for (auto _ : state) {
     state.PauseTiming();
-    Container c;
+    auto c = new Container;
     state.ResumeTiming();
 
     for (int j = 0; j < state.range(0); ++j) {
-      c.emplace(GetRandom(), value);
+      c->emplace(GetRandom(), value);
     }
+
+    state.PauseTiming();
+    delete c;
+    state.ResumeTiming();
   }
 }
 S(BENCHMARK_TEMPLATE(BM_Insert_Cpp, std::map<int, void *>));
@@ -165,14 +169,18 @@ static void BM_Remove_Cpp(benchmark::State &state)
   void *value = nullptr;
   for (auto _ : state) {
     state.PauseTiming();
-    Container c;
+    auto c = new Container;
     RandomSet rs(static_cast<size_t>(state.range(0)));
-    rs.ForEach([&](auto v) { c.emplace(v, value); });
+    rs.ForEach([&](auto v) { c->emplace(v, value); });
     state.ResumeTiming();
 
     for (int j = 0; j < state.range(0); ++j) {
-      c.erase(rs.Get());
+      c->erase(rs.Get());
     }
+
+    state.PauseTiming();
+    delete c;
+    state.ResumeTiming();
   }
 }
 S(BENCHMARK_TEMPLATE(BM_Remove_Cpp, std::map<int, void *>));
@@ -306,14 +314,18 @@ static void BM_Search_Cpp(benchmark::State &state)
   void *value = nullptr;
   for (auto _ : state) {
     state.PauseTiming();
-    Container c;
+    auto c = new Container;
     RandomSet rs(static_cast<size_t>(state.range(0)));
-    rs.ForEach([&](auto v) { c.emplace(v, value); });
+    rs.ForEach([&](auto v) { c->emplace(v, value); });
     state.ResumeTiming();
 
     for (int j = 0; j < state.range(0); ++j) {
-      benchmark::DoNotOptimize(c[rs.Get()]);
+      benchmark::DoNotOptimize(c->operator[](rs.Get()));
     }
+
+    state.PauseTiming();
+    delete c;
+    state.ResumeTiming();
   }
 }
 S(BENCHMARK_TEMPLATE(BM_Search_Cpp, std::map<int, void *>));
