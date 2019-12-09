@@ -7,7 +7,7 @@ from matplotlib import pyplot as plt
 
 
 def main():
-    assert len(sys.argv) == 2, "plot.py benchmark.csv"
+    assert len(sys.argv) == 2, "plot.py benchmark.json"
     filename = sys.argv[1]
 
     with open(filename) as f:

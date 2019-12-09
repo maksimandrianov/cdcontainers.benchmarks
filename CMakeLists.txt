@@ -81,15 +81,25 @@ link_directories("${GLIBC_PATH}/lib/")
 include_directories("${GLIBC_PATH}/lib/glib-2.0/include/")
 include_directories("${GLIBC_PATH}/include/glib-2.0")
 
+function(link binary_name filename)
+  include_directories(.)
+  add_executable(
+    ${binary_name}
+    ${filename}
+    benchmarks/utils.cpp
+    benchmarks/utils.hpp
+  )
+  add_dependencies(${binary_name} ex_benchmark ex_cdcontainers ex_collectc ex_glibc)
+  target_link_libraries(
+    ${binary_name}
+    benchmark
+    cdcontainers
+    collectc
+    glib-2.0
+    ${CMAKE_THREAD_LIBS_INIT}
+  )
+endfunction()
 
-add_executable(bench_map benchmarks/bench_map.cpp)
-add_dependencies(bench_map ex_benchmark ex_cdcontainers ex_collectc ex_glibc)
-target_link_libraries(
-  bench_map
-  benchmark
-  cdcontainers
-  collectc
-  glib-2.0
-  ${CMAKE_THREAD_LIBS_INIT}
-)
-
+link(bench_map benchmarks/bench_map.cpp)
+link(bench_list benchmarks/bench_list.cpp)
+link(bench_deque benchmarks/bench_deque.cpp)
