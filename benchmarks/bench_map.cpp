@@ -32,6 +32,12 @@ extern "C" {
 #include <map>
 #include <unordered_map>
 
+gboolean GTraverse(gpointer key, gpointer value, gpointer data)
+{
+  benchmark::DoNotOptimize(value);
+  return false;
+}
+
 // Insert benchmarks:
 template <class Container>
 static void BM_Insert_Cpp(benchmark::State &state)
@@ -458,5 +464,164 @@ static void BM_Search_GHashTable(benchmark::State &state)
   }
 }
 S(BENCHMARK(BM_Search_GHashTable));
+
+// Iterator traversal benchmarks:
+template <class Container>
+static void BM_ItTraversal_Cpp(benchmark::State &state)
+{
+  void *value = nullptr;
+  for (auto _ : state) {
+    state.PauseTiming();
+    auto c = new Container;
+    RandomSet rs(static_cast<size_t>(state.range(0)));
+    rs.ForEach([&](auto v) { c->emplace(v, value); });
+    state.ResumeTiming();
+
+    auto end = std::end(*c);
+    for (auto it = std::begin(*c); it != end; ++it) {
+      benchmark::DoNotOptimize(it->second);
+    }
+
+    state.PauseTiming();
+    delete c;
+    state.ResumeTiming();
+  }
+}
+S(BENCHMARK_TEMPLATE(BM_ItTraversal_Cpp, std::map<int, void *>));
+S(BENCHMARK_TEMPLATE(BM_ItTraversal_Cpp, std::unordered_map<int, void *>));
+
+static void BM_ItTraversal_CdcMap(benchmark::State &state,
+                                  const struct cdc_map_table *table)
+{
+  struct cdc_data_info info = {};
+  info.eq = IsEquil;
+  info.cmp = Less;
+  info.hash = Hash;
+  for (auto _ : state) {
+    state.PauseTiming();
+    struct cdc_map *map = nullptr;
+    cdc_map_ctor(table, &map, &info);
+    RandomSet rs(static_cast<size_t>(state.range(0)));
+    rs.ForEach([=](auto v) {
+      cdc_map_insert(map, CDC_FROM_INT(v), nullptr, nullptr, nullptr);
+    });
+    state.ResumeTiming();
+
+    cdc_map_iter it;
+    cdc_map_iter_ctor(map, &it);
+    cdc_map_begin(map, &it);
+    while (cdc_map_iter_has_next(&it)) {
+      benchmark::DoNotOptimize(cdc_map_iter_value(&it));
+      cdc_map_iter_next(&it);
+    }
+    cdc_map_iter_dtor(&it);
+
+    state.PauseTiming();
+    cdc_map_dtor(map);
+    state.ResumeTiming();
+  }
+}
+S(BENCHMARK_CAPTURE(BM_ItTraversal_CdcMap, hash_table, cdc_map_htable));
+S(BENCHMARK_CAPTURE(BM_ItTraversal_CdcMap, avl_tree, cdc_map_avl));
+S(BENCHMARK_CAPTURE(BM_ItTraversal_CdcMap, treep, cdc_map_treap));
+S(BENCHMARK_CAPTURE(BM_ItTraversal_CdcMap, splay_tree, cdc_map_splay));
+
+static void BM_ItTraversal_CcHashTable(benchmark::State &state)
+{
+  HashTableConf conf;
+  hashtable_conf_init(&conf);
+  conf.key_compare = IsEquil;
+  conf.hash = CcHash;
+  for (auto _ : state) {
+    state.PauseTiming();
+    HashTable *table = nullptr;
+    hashtable_new_conf(&conf, &table);
+    RandomSet rs(static_cast<size_t>(state.range(0)));
+    rs.ForEach([&](auto v) { hashtable_add(table, CDC_FROM_INT(v), nullptr); });
+    state.ResumeTiming();
+
+    HashTableIter it;
+    hashtable_iter_init(&it, table);
+    TableEntry *entry;
+    while (hashtable_iter_next(&it, &entry) != CC_ITER_END) {
+      benchmark::DoNotOptimize(entry->value);
+    }
+
+    state.PauseTiming();
+    hashtable_destroy(table);
+    state.ResumeTiming();
+  }
+}
+S(BENCHMARK(BM_ItTraversal_CcHashTable));
+
+static void BM_ItTraversal_CcTreeTable(benchmark::State &state)
+{
+  TreeTableConf conf;
+  treetable_conf_init(&conf);
+  conf.cmp = CcCmp;
+  for (auto _ : state) {
+    state.PauseTiming();
+    TreeTable *table = nullptr;
+    treetable_new_conf(&conf, &table);
+    RandomSet rs(static_cast<size_t>(state.range(0)));
+    rs.ForEach([&](auto v) { treetable_add(table, CDC_FROM_INT(v), nullptr); });
+    state.ResumeTiming();
+
+    TreeTableIter it;
+    treetable_iter_init(&it, table);
+    TreeTableEntry *entry;
+    while (treetable_iter_next(&it, entry) != CC_ITER_END) {
+      benchmark::DoNotOptimize(entry->value);
+    }
+
+    state.PauseTiming();
+    treetable_destroy(table);
+    state.ResumeTiming();
+  }
+}
+S(BENCHMARK(BM_ItTraversal_CcTreeTable));
+
+static void BM_ItTraversal_GTree(benchmark::State &state)
+{
+  for (auto _ : state) {
+    state.PauseTiming();
+    GTree *tree = g_tree_new(CcCmp);
+    RandomSet rs(static_cast<size_t>(state.range(0)));
+    rs.ForEach([&](auto v) { g_tree_insert(tree, CDC_FROM_INT(v), nullptr); });
+    state.ResumeTiming();
+
+    g_tree_foreach(tree, GTraverse, nullptr);
+
+    state.PauseTiming();
+    g_tree_destroy(tree);
+    state.ResumeTiming();
+  }
+}
+S(BENCHMARK(BM_ItTraversal_GTree));
+
+static void BM_ItTraversal_GHashTable(benchmark::State &state)
+{
+  for (auto _ : state) {
+    state.PauseTiming();
+    GHashTable *table = g_hash_table_new(GHash, IsEquil);
+    RandomSet rs(static_cast<size_t>(state.range(0)));
+    rs.ForEach(
+        [&](auto v) { g_hash_table_insert(table, CDC_FROM_INT(v), nullptr); });
+    state.ResumeTiming();
+
+    GHashTableIter it;
+    g_hash_table_iter_init(&it, table);
+    void *key;
+    void *value;
+    while (g_hash_table_iter_next(&it, &key, &value)) {
+      benchmark::DoNotOptimize(value);
+    }
+
+    state.PauseTiming();
+    g_hash_table_destroy(table);
+    state.ResumeTiming();
+  }
+}
+S(BENCHMARK(BM_ItTraversal_GHashTable));
 
 BENCHMARK_MAIN();
