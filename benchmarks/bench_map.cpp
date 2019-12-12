@@ -569,9 +569,9 @@ static void BM_ItTraversal_CcTreeTable(benchmark::State &state)
 
     TreeTableIter it;
     treetable_iter_init(&it, table);
-    TreeTableEntry *entry;
-    while (treetable_iter_next(&it, entry) != CC_ITER_END) {
-      benchmark::DoNotOptimize(entry->value);
+    TreeTableEntry entry;
+    while (treetable_iter_next(&it, &entry) != CC_ITER_END) {
+      benchmark::DoNotOptimize(entry.value);
     }
 
     state.PauseTiming();
