@@ -26,8 +26,7 @@
 #define S(benchmark)                          \
   benchmark->RangeMultiplier(2)               \
       ->Range(1 << 2, 1 << 12)                \
-      ->DenseRange(1 << 13, 1 << 17, 1 << 14) \
-      ->Threads(4);
+      ->DenseRange(1 << 13, 1 << 17, 1 << 14)
 
 class RandomSet
 {
