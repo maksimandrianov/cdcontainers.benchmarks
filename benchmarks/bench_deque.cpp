@@ -50,12 +50,13 @@ static void BM_PushBack_CppDeque(benchmark::State &state)
 }
 S(BENCHMARK(BM_PushBack_CppDeque));
 
-static void BM_PushBack_CdcDeque(benchmark::State &state)
+static void BM_PushBack_CdcDeque(benchmark::State &state,
+                                 const struct cdc_sequence_table *table)
 {
   for (auto _ : state) {
     state.PauseTiming();
     struct cdc_deque *deque = nullptr;
-    cdc_deque_ctor(&deque, nullptr);
+    cdc_deque_ctor(table, &deque, nullptr);
     state.ResumeTiming();
 
     for (int j = 0; j < state.range(0); ++j) {
@@ -67,7 +68,8 @@ static void BM_PushBack_CdcDeque(benchmark::State &state)
     state.ResumeTiming();
   }
 }
-S(BENCHMARK(BM_PushBack_CdcDeque));
+S(BENCHMARK_CAPTURE(BM_PushBack_CdcDeque, circular_array, cdc_seq_carray));
+S(BENCHMARK_CAPTURE(BM_PushBack_CdcDeque, list, cdc_seq_list));
 
 static void BM_PushBack_CcDeque(benchmark::State &state)
 {
@@ -125,12 +127,13 @@ static void BM_PushFront_CppDeque(benchmark::State &state)
 }
 S(BENCHMARK(BM_PushFront_CppDeque));
 
-static void BM_PushFront_CdcDeque(benchmark::State &state)
+static void BM_PushFront_CdcDeque(benchmark::State &state,
+                                  const struct cdc_sequence_table *table)
 {
   for (auto _ : state) {
     state.PauseTiming();
     struct cdc_deque *deque = nullptr;
-    cdc_deque_ctor(&deque, nullptr);
+    cdc_deque_ctor(table, &deque, nullptr);
     state.ResumeTiming();
 
     for (int j = 0; j < state.range(0); ++j) {
@@ -142,7 +145,8 @@ static void BM_PushFront_CdcDeque(benchmark::State &state)
     state.ResumeTiming();
   }
 }
-S(BENCHMARK(BM_PushFront_CdcDeque));
+S(BENCHMARK_CAPTURE(BM_PushFront_CdcDeque, circular_array, cdc_seq_carray));
+S(BENCHMARK_CAPTURE(BM_PushFront_CdcDeque, list, cdc_seq_list));
 
 static void BM_PushFront_CcDeque(benchmark::State &state)
 {
@@ -202,12 +206,13 @@ static void BM_InsertRandPos_CppDeque(benchmark::State &state)
 }
 S(BENCHMARK(BM_InsertRandPos_CppDeque));
 
-static void BM_InsertRandPos_CdcDeque(benchmark::State &state)
+static void BM_InsertRandPos_CdcDeque(benchmark::State &state,
+                                      const struct cdc_sequence_table *table)
 {
   for (auto _ : state) {
     state.PauseTiming();
     struct cdc_deque *deque = nullptr;
-    cdc_deque_ctorl(&deque, nullptr, CDC_FROM_INT(1), CDC_FROM_INT(2),
+    cdc_deque_ctorl(table, &deque, nullptr, CDC_FROM_INT(1), CDC_FROM_INT(2),
                     CDC_FROM_INT(3), CDC_FROM_INT(4), CDC_FROM_INT(5), CDC_END);
     state.ResumeTiming();
 
@@ -218,10 +223,12 @@ static void BM_InsertRandPos_CdcDeque(benchmark::State &state)
 
     state.PauseTiming();
     cdc_deque_dtor(deque);
+    deque = nullptr;
     state.ResumeTiming();
   }
 }
-S(BENCHMARK(BM_InsertRandPos_CdcDeque));
+S(BENCHMARK_CAPTURE(BM_InsertRandPos_CdcDeque, circular_array, cdc_seq_carray));
+S(BENCHMARK_CAPTURE(BM_InsertRandPos_CdcDeque, list, cdc_seq_list));
 
 static void BM_InsertRandPos_CcDeque(benchmark::State &state)
 {
