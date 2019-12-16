@@ -53,3 +53,28 @@ Adding an element to the end:
 Insertion an element in the middle:
 
 ![](https://raw.githubusercontent.com/maksimandrianov/cdcontainers.benchmarks/master/_graphs/_bench_list_InsertMid.svg?sanitize=true)
+
+
+## Map
+
+Insertion an element:
+
+![](https://raw.githubusercontent.com/maksimandrianov/cdcontainers.benchmarks/master/_graphs/_bench_map_Insert.svg?sanitize=true)
+
+Erasing an element:
+
+![](https://raw.githubusercontent.com/maksimandrianov/cdcontainers.benchmarks/master/_graphs/_bench_map_Remove.svg?sanitize=true)
+
+Search of an elemen with specific key:
+
+![](https://raw.githubusercontent.com/maksimandrianov/cdcontainers.benchmarks/master/_graphs/_bench_map_Search.svg?sanitize=true)
+
+For each loop with iterators:
+
+![](https://raw.githubusercontent.com/maksimandrianov/cdcontainers.benchmarks/master/_graphs/_bench_map_ItTraversal.svg?sanitize=true)
+
+
+
+
+
+
