@@ -49,25 +49,6 @@ static void BM_PushBack_CppList(benchmark::State &state)
 }
 S(BENCHMARK(BM_PushBack_CppList));
 
-static void BM_PushBack_CdcList(benchmark::State &state)
-{
-  for (auto _ : state) {
-    state.PauseTiming();
-    struct cdc_list *list = nullptr;
-    cdc_list_ctor(&list, nullptr);
-    state.ResumeTiming();
-
-    for (int j = 0; j < state.range(0); ++j) {
-      cdc_list_push_back(list, CDC_FROM_INT(GetRandom()));
-    }
-
-    state.PauseTiming();
-    cdc_list_dtor(list);
-    state.ResumeTiming();
-  }
-}
-S(BENCHMARK(BM_PushBack_CdcList));
-
 static void BM_PushBack_CcList(benchmark::State &state)
 {
   for (auto _ : state) {
@@ -105,6 +86,25 @@ static void BM_PushBack_GList(benchmark::State &state)
 }
 S(BENCHMARK(BM_PushBack_GList));
 
+static void BM_PushBack_CdcList(benchmark::State &state)
+{
+  for (auto _ : state) {
+    state.PauseTiming();
+    struct cdc_list *list = nullptr;
+    cdc_list_ctor(&list, nullptr);
+    state.ResumeTiming();
+
+    for (int j = 0; j < state.range(0); ++j) {
+      cdc_list_push_back(list, CDC_FROM_INT(GetRandom()));
+    }
+
+    state.PauseTiming();
+    cdc_list_dtor(list);
+    state.ResumeTiming();
+  }
+}
+S(BENCHMARK(BM_PushBack_CdcList));
+
 // Push front benchmarks:
 static void BM_PushFront_CppList(benchmark::State &state)
 {
@@ -123,25 +123,6 @@ static void BM_PushFront_CppList(benchmark::State &state)
   }
 }
 S(BENCHMARK(BM_PushFront_CppList));
-
-static void BM_PushFront_CdcList(benchmark::State &state)
-{
-  for (auto _ : state) {
-    state.PauseTiming();
-    struct cdc_list *list = nullptr;
-    cdc_list_ctor(&list, nullptr);
-    state.ResumeTiming();
-
-    for (int j = 0; j < state.range(0); ++j) {
-      cdc_list_push_front(list, CDC_FROM_INT(GetRandom()));
-    }
-
-    state.PauseTiming();
-    cdc_list_dtor(list);
-    state.ResumeTiming();
-  }
-}
-S(BENCHMARK(BM_PushFront_CdcList));
 
 static void BM_PushFront_CcList(benchmark::State &state)
 {
@@ -180,6 +161,25 @@ static void BM_PushFront_GList(benchmark::State &state)
 }
 S(BENCHMARK(BM_PushFront_GList));
 
+static void BM_PushFront_CdcList(benchmark::State &state)
+{
+  for (auto _ : state) {
+    state.PauseTiming();
+    struct cdc_list *list = nullptr;
+    cdc_list_ctor(&list, nullptr);
+    state.ResumeTiming();
+
+    for (int j = 0; j < state.range(0); ++j) {
+      cdc_list_push_front(list, CDC_FROM_INT(GetRandom()));
+    }
+
+    state.PauseTiming();
+    cdc_list_dtor(list);
+    state.ResumeTiming();
+  }
+}
+S(BENCHMARK(BM_PushFront_CdcList));
+
 // Insert mid benchmarks:
 static void BM_InsertMid_CppList(benchmark::State &state)
 {
@@ -199,32 +199,6 @@ static void BM_InsertMid_CppList(benchmark::State &state)
   }
 }
 S(BENCHMARK(BM_InsertMid_CppList));
-
-static void BM_InsertMid_CdcList(benchmark::State &state)
-{
-  for (auto _ : state) {
-    state.PauseTiming();
-    struct cdc_list *list = nullptr;
-    cdc_list_ctorl(&list, nullptr, CDC_FROM_INT(1), CDC_FROM_INT(2),
-                   CDC_FROM_INT(3), CDC_FROM_INT(4), CDC_FROM_INT(5), CDC_END);
-    struct cdc_list_iter it = {};
-    cdc_list_begin(list, &it);
-    while (cdc_list_iter_has_next(&it) &&
-           cdc_list_iter_data(&it) != CDC_FROM_INT(3)) {
-      cdc_list_iter_next(&it);
-    }
-    state.ResumeTiming();
-
-    for (int j = 0; j < state.range(0); ++j) {
-      cdc_list_iinsert(&it, CDC_FROM_INT(GetRandom()));
-    }
-
-    state.PauseTiming();
-    cdc_list_dtor(list);
-    state.ResumeTiming();
-  }
-}
-S(BENCHMARK(BM_InsertMid_CdcList));
 
 static void BM_InsertMid_CcList(benchmark::State &state)
 {
@@ -276,5 +250,31 @@ static void BM_InsertMid_GList(benchmark::State &state)
   }
 }
 S(BENCHMARK(BM_InsertMid_GList));
+
+static void BM_InsertMid_CdcList(benchmark::State &state)
+{
+  for (auto _ : state) {
+    state.PauseTiming();
+    struct cdc_list *list = nullptr;
+    cdc_list_ctorl(&list, nullptr, CDC_FROM_INT(1), CDC_FROM_INT(2),
+                   CDC_FROM_INT(3), CDC_FROM_INT(4), CDC_FROM_INT(5), CDC_END);
+    struct cdc_list_iter it = {};
+    cdc_list_begin(list, &it);
+    while (cdc_list_iter_has_next(&it) &&
+           cdc_list_iter_data(&it) != CDC_FROM_INT(3)) {
+      cdc_list_iter_next(&it);
+    }
+    state.ResumeTiming();
+
+    for (int j = 0; j < state.range(0); ++j) {
+      cdc_list_iinsert(&it, CDC_FROM_INT(GetRandom()));
+    }
+
+    state.PauseTiming();
+    cdc_list_dtor(list);
+    state.ResumeTiming();
+  }
+}
+S(BENCHMARK(BM_InsertMid_CdcList));
 
 BENCHMARK_MAIN();

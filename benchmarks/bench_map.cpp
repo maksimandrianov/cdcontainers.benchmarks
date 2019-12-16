@@ -60,33 +60,6 @@ static void BM_Insert_Cpp(benchmark::State &state)
 S(BENCHMARK_TEMPLATE(BM_Insert_Cpp, std::map<int, void *>));
 S(BENCHMARK_TEMPLATE(BM_Insert_Cpp, std::unordered_map<int, void *>));
 
-static void BM_Insert_CdcMap(benchmark::State &state,
-                             const struct cdc_map_table *table)
-{
-  struct cdc_data_info info = {};
-  info.eq = IsEquil;
-  info.cmp = Less;
-  info.hash = Hash;
-  for (auto _ : state) {
-    state.PauseTiming();
-    struct cdc_map *map = nullptr;
-    cdc_map_ctor(table, &map, &info);
-    state.ResumeTiming();
-
-    for (int j = 0; j < state.range(0); ++j) {
-      cdc_map_insert(map, CDC_FROM_INT(GetRandom()), nullptr, nullptr, nullptr);
-    }
-
-    state.PauseTiming();
-    cdc_map_dtor(map);
-    state.ResumeTiming();
-  }
-}
-S(BENCHMARK_CAPTURE(BM_Insert_CdcMap, hash_table, cdc_map_htable));
-S(BENCHMARK_CAPTURE(BM_Insert_CdcMap, avl_tree, cdc_map_avl));
-S(BENCHMARK_CAPTURE(BM_Insert_CdcMap, treep, cdc_map_treap));
-S(BENCHMARK_CAPTURE(BM_Insert_CdcMap, splay_tree, cdc_map_splay));
-
 static void BM_Insert_CcHashTable(benchmark::State &state)
 {
   HashTableConf conf;
@@ -168,6 +141,78 @@ static void BM_Insert_GHashTable(benchmark::State &state)
 }
 S(BENCHMARK(BM_Insert_GHashTable));
 
+static void BM_Insert_CdcMap(benchmark::State &state,
+                             const struct cdc_map_table *table)
+{
+  struct cdc_data_info info = {};
+  info.eq = IsEquil;
+  info.cmp = Less;
+  info.hash = Hash;
+  for (auto _ : state) {
+    state.PauseTiming();
+    struct cdc_map *map = nullptr;
+    cdc_map_ctor(table, &map, &info);
+    state.ResumeTiming();
+
+    for (int j = 0; j < state.range(0); ++j) {
+      cdc_map_insert(map, CDC_FROM_INT(GetRandom()), nullptr, nullptr, nullptr);
+    }
+
+    state.PauseTiming();
+    cdc_map_dtor(map);
+    state.ResumeTiming();
+  }
+}
+S(BENCHMARK_CAPTURE(BM_Insert_CdcMap, hash_table, cdc_map_htable));
+S(BENCHMARK_CAPTURE(BM_Insert_CdcMap, avl_tree, cdc_map_avl));
+S(BENCHMARK_CAPTURE(BM_Insert_CdcMap, treep, cdc_map_treap));
+S(BENCHMARK_CAPTURE(BM_Insert_CdcMap, splay_tree, cdc_map_splay));
+
+static void BM_Insert_CdcHashTable(benchmark::State &state)
+{
+  struct cdc_data_info info = {};
+  info.eq = IsEquil;
+  info.hash = Hash;
+  for (auto _ : state) {
+    state.PauseTiming();
+    struct cdc_hash_table *map = nullptr;
+    cdc_hash_table_ctor(&map, &info);
+    state.ResumeTiming();
+
+    for (int j = 0; j < state.range(0); ++j) {
+      cdc_hash_table_insert(map, CDC_FROM_INT(GetRandom()), nullptr, nullptr,
+                            nullptr);
+    }
+
+    state.PauseTiming();
+    cdc_hash_table_dtor(map);
+    state.ResumeTiming();
+  }
+}
+S(BENCHMARK(BM_Insert_CdcHashTable));
+
+static void BM_Insert_CdcAvlTree(benchmark::State &state)
+{
+  struct cdc_data_info info = {};
+  info.cmp = Less;
+  for (auto _ : state) {
+    state.PauseTiming();
+    struct cdc_avl_tree *map = nullptr;
+    cdc_avl_tree_ctor(&map, &info);
+    state.ResumeTiming();
+
+    for (int j = 0; j < state.range(0); ++j) {
+      cdc_avl_tree_insert1(map, CDC_FROM_INT(GetRandom()), nullptr, nullptr,
+                           nullptr);
+    }
+
+    state.PauseTiming();
+    cdc_avl_tree_dtor(map);
+    state.ResumeTiming();
+  }
+}
+S(BENCHMARK(BM_Insert_CdcAvlTree));
+
 // Remove benchmarks:
 template <class Container>
 static void BM_Remove_Cpp(benchmark::State &state)
@@ -191,37 +236,6 @@ static void BM_Remove_Cpp(benchmark::State &state)
 }
 S(BENCHMARK_TEMPLATE(BM_Remove_Cpp, std::map<int, void *>));
 S(BENCHMARK_TEMPLATE(BM_Remove_Cpp, std::unordered_map<int, void *>));
-
-static void BM_Remove_CdcMap(benchmark::State &state,
-                             const struct cdc_map_table *table)
-{
-  struct cdc_data_info info = {};
-  info.eq = IsEquil;
-  info.cmp = Less;
-  info.hash = Hash;
-  for (auto _ : state) {
-    state.PauseTiming();
-    struct cdc_map *map = nullptr;
-    cdc_map_ctor(table, &map, &info);
-    RandomSet rs(static_cast<size_t>(state.range(0)));
-    rs.ForEach([=](auto v) {
-      cdc_map_insert(map, CDC_FROM_INT(v), nullptr, nullptr, nullptr);
-    });
-    state.ResumeTiming();
-
-    for (int j = 0; j < state.range(0); ++j) {
-      cdc_map_erase(map, CDC_FROM_INT(rs.Get()));
-    }
-
-    state.PauseTiming();
-    cdc_map_dtor(map);
-    state.ResumeTiming();
-  }
-}
-S(BENCHMARK_CAPTURE(BM_Remove_CdcMap, hash_table, cdc_map_htable));
-S(BENCHMARK_CAPTURE(BM_Remove_CdcMap, avl_tree, cdc_map_avl));
-S(BENCHMARK_CAPTURE(BM_Remove_CdcMap, treep, cdc_map_treap));
-S(BENCHMARK_CAPTURE(BM_Remove_CdcMap, splay_tree, cdc_map_splay));
 
 static void BM_Remove_CcHashTable(benchmark::State &state)
 {
@@ -313,6 +327,88 @@ static void BM_Remove_GHashTable(benchmark::State &state)
 }
 S(BENCHMARK(BM_Remove_GHashTable));
 
+static void BM_Remove_CdcMap(benchmark::State &state,
+                             const struct cdc_map_table *table)
+{
+  struct cdc_data_info info = {};
+  info.eq = IsEquil;
+  info.cmp = Less;
+  info.hash = Hash;
+  for (auto _ : state) {
+    state.PauseTiming();
+    struct cdc_map *map = nullptr;
+    cdc_map_ctor(table, &map, &info);
+    RandomSet rs(static_cast<size_t>(state.range(0)));
+    rs.ForEach([=](auto v) {
+      cdc_map_insert(map, CDC_FROM_INT(v), nullptr, nullptr, nullptr);
+    });
+    state.ResumeTiming();
+
+    for (int j = 0; j < state.range(0); ++j) {
+      cdc_map_erase(map, CDC_FROM_INT(rs.Get()));
+    }
+
+    state.PauseTiming();
+    cdc_map_dtor(map);
+    state.ResumeTiming();
+  }
+}
+S(BENCHMARK_CAPTURE(BM_Remove_CdcMap, hash_table, cdc_map_htable));
+S(BENCHMARK_CAPTURE(BM_Remove_CdcMap, avl_tree, cdc_map_avl));
+S(BENCHMARK_CAPTURE(BM_Remove_CdcMap, treep, cdc_map_treap));
+S(BENCHMARK_CAPTURE(BM_Remove_CdcMap, splay_tree, cdc_map_splay));
+
+static void BM_Remove_CdcHashTable(benchmark::State &state)
+{
+  struct cdc_data_info info = {};
+  info.eq = IsEquil;
+  info.hash = Hash;
+  for (auto _ : state) {
+    state.PauseTiming();
+    struct cdc_hash_table *map = nullptr;
+    cdc_hash_table_ctor(&map, &info);
+    RandomSet rs(static_cast<size_t>(state.range(0)));
+    rs.ForEach([=](auto v) {
+      cdc_hash_table_insert(map, CDC_FROM_INT(v), nullptr, nullptr, nullptr);
+    });
+    state.ResumeTiming();
+
+    for (int j = 0; j < state.range(0); ++j) {
+      cdc_hash_table_erase(map, CDC_FROM_INT(rs.Get()));
+    }
+
+    state.PauseTiming();
+    cdc_hash_table_dtor(map);
+    state.ResumeTiming();
+  }
+}
+S(BENCHMARK(BM_Remove_CdcHashTable));
+
+static void BM_Remove_CdcAvlTree(benchmark::State &state)
+{
+  struct cdc_data_info info = {};
+  info.cmp = Less;
+  for (auto _ : state) {
+    state.PauseTiming();
+    struct cdc_avl_tree *map = nullptr;
+    cdc_avl_tree_ctor(&map, &info);
+    RandomSet rs(static_cast<size_t>(state.range(0)));
+    rs.ForEach([=](auto v) {
+      cdc_avl_tree_insert1(map, CDC_FROM_INT(v), nullptr, nullptr, nullptr);
+    });
+    state.ResumeTiming();
+
+    for (int j = 0; j < state.range(0); ++j) {
+      cdc_avl_tree_erase(map, CDC_FROM_INT(rs.Get()));
+    }
+
+    state.PauseTiming();
+    cdc_avl_tree_dtor(map);
+    state.ResumeTiming();
+  }
+}
+S(BENCHMARK(BM_Remove_CdcAvlTree));
+
 // Search benchmarks:
 template <class Container>
 static void BM_Search_Cpp(benchmark::State &state)
@@ -336,39 +432,6 @@ static void BM_Search_Cpp(benchmark::State &state)
 }
 S(BENCHMARK_TEMPLATE(BM_Search_Cpp, std::map<int, void *>));
 S(BENCHMARK_TEMPLATE(BM_Search_Cpp, std::unordered_map<int, void *>));
-
-static void BM_Search_CdcMap(benchmark::State &state,
-                             const struct cdc_map_table *table)
-{
-  struct cdc_data_info info = {};
-  info.eq = IsEquil;
-  info.cmp = Less;
-  info.hash = Hash;
-  void *value = nullptr;
-  for (auto _ : state) {
-    state.PauseTiming();
-    struct cdc_map *map = nullptr;
-    cdc_map_ctor(table, &map, &info);
-    RandomSet rs(static_cast<size_t>(state.range(0)));
-    rs.ForEach([=](auto v) {
-      cdc_map_insert(map, CDC_FROM_INT(v), nullptr, nullptr, nullptr);
-    });
-    state.ResumeTiming();
-
-    for (int j = 0; j < state.range(0); ++j) {
-      benchmark::DoNotOptimize(
-          cdc_map_get(map, CDC_FROM_INT(rs.Get()), &value));
-    }
-
-    state.PauseTiming();
-    cdc_map_dtor(map);
-    state.ResumeTiming();
-  }
-}
-S(BENCHMARK_CAPTURE(BM_Search_CdcMap, hash_table, cdc_map_htable));
-S(BENCHMARK_CAPTURE(BM_Search_CdcMap, avl_tree, cdc_map_avl));
-S(BENCHMARK_CAPTURE(BM_Search_CdcMap, treep, cdc_map_treap));
-S(BENCHMARK_CAPTURE(BM_Search_CdcMap, splay_tree, cdc_map_splay));
 
 static void BM_Search_CcHashTable(benchmark::State &state)
 {
@@ -465,6 +528,94 @@ static void BM_Search_GHashTable(benchmark::State &state)
 }
 S(BENCHMARK(BM_Search_GHashTable));
 
+static void BM_Search_CdcMap(benchmark::State &state,
+                             const struct cdc_map_table *table)
+{
+  struct cdc_data_info info = {};
+  info.eq = IsEquil;
+  info.cmp = Less;
+  info.hash = Hash;
+  void *value = nullptr;
+  for (auto _ : state) {
+    state.PauseTiming();
+    struct cdc_map *map = nullptr;
+    cdc_map_ctor(table, &map, &info);
+    RandomSet rs(static_cast<size_t>(state.range(0)));
+    rs.ForEach([=](auto v) {
+      cdc_map_insert(map, CDC_FROM_INT(v), nullptr, nullptr, nullptr);
+    });
+    state.ResumeTiming();
+
+    for (int j = 0; j < state.range(0); ++j) {
+      benchmark::DoNotOptimize(
+          cdc_map_get(map, CDC_FROM_INT(rs.Get()), &value));
+    }
+
+    state.PauseTiming();
+    cdc_map_dtor(map);
+    state.ResumeTiming();
+  }
+}
+S(BENCHMARK_CAPTURE(BM_Search_CdcMap, hash_table, cdc_map_htable));
+S(BENCHMARK_CAPTURE(BM_Search_CdcMap, avl_tree, cdc_map_avl));
+S(BENCHMARK_CAPTURE(BM_Search_CdcMap, treep, cdc_map_treap));
+S(BENCHMARK_CAPTURE(BM_Search_CdcMap, splay_tree, cdc_map_splay));
+
+static void BM_Search_CdcHashTable(benchmark::State &state)
+{
+  struct cdc_data_info info = {};
+  info.eq = IsEquil;
+  info.hash = Hash;
+  void *value = nullptr;
+  for (auto _ : state) {
+    state.PauseTiming();
+    struct cdc_hash_table *map = nullptr;
+    cdc_hash_table_ctor(&map, &info);
+    RandomSet rs(static_cast<size_t>(state.range(0)));
+    rs.ForEach([=](auto v) {
+      cdc_hash_table_insert(map, CDC_FROM_INT(v), nullptr, nullptr, nullptr);
+    });
+    state.ResumeTiming();
+
+    for (int j = 0; j < state.range(0); ++j) {
+      benchmark::DoNotOptimize(
+          cdc_hash_table_get(map, CDC_FROM_INT(rs.Get()), &value));
+    }
+
+    state.PauseTiming();
+    cdc_hash_table_dtor(map);
+    state.ResumeTiming();
+  }
+}
+S(BENCHMARK(BM_Search_CdcHashTable));
+
+static void BM_Search_CdcAvlTree(benchmark::State &state)
+{
+  struct cdc_data_info info = {};
+  info.cmp = Less;
+  void *value = nullptr;
+  for (auto _ : state) {
+    state.PauseTiming();
+    struct cdc_avl_tree *map = nullptr;
+    cdc_avl_tree_ctor(&map, &info);
+    RandomSet rs(static_cast<size_t>(state.range(0)));
+    rs.ForEach([=](auto v) {
+      cdc_avl_tree_insert1(map, CDC_FROM_INT(v), nullptr, nullptr, nullptr);
+    });
+    state.ResumeTiming();
+
+    for (int j = 0; j < state.range(0); ++j) {
+      benchmark::DoNotOptimize(
+          cdc_avl_tree_get(map, CDC_FROM_INT(rs.Get()), &value));
+    }
+
+    state.PauseTiming();
+    cdc_avl_tree_dtor(map);
+    state.ResumeTiming();
+  }
+}
+S(BENCHMARK(BM_Search_CdcAvlTree));
+
 // Iterator traversal benchmarks:
 template <class Container>
 static void BM_ItTraversal_Cpp(benchmark::State &state)
@@ -489,42 +640,6 @@ static void BM_ItTraversal_Cpp(benchmark::State &state)
 }
 S(BENCHMARK_TEMPLATE(BM_ItTraversal_Cpp, std::map<int, void *>));
 S(BENCHMARK_TEMPLATE(BM_ItTraversal_Cpp, std::unordered_map<int, void *>));
-
-static void BM_ItTraversal_CdcMap(benchmark::State &state,
-                                  const struct cdc_map_table *table)
-{
-  struct cdc_data_info info = {};
-  info.eq = IsEquil;
-  info.cmp = Less;
-  info.hash = Hash;
-  for (auto _ : state) {
-    state.PauseTiming();
-    struct cdc_map *map = nullptr;
-    cdc_map_ctor(table, &map, &info);
-    RandomSet rs(static_cast<size_t>(state.range(0)));
-    rs.ForEach([=](auto v) {
-      cdc_map_insert(map, CDC_FROM_INT(v), nullptr, nullptr, nullptr);
-    });
-    state.ResumeTiming();
-
-    cdc_map_iter it;
-    cdc_map_iter_ctor(map, &it);
-    cdc_map_begin(map, &it);
-    while (cdc_map_iter_has_next(&it)) {
-      benchmark::DoNotOptimize(cdc_map_iter_value(&it));
-      cdc_map_iter_next(&it);
-    }
-    cdc_map_iter_dtor(&it);
-
-    state.PauseTiming();
-    cdc_map_dtor(map);
-    state.ResumeTiming();
-  }
-}
-S(BENCHMARK_CAPTURE(BM_ItTraversal_CdcMap, hash_table, cdc_map_htable));
-S(BENCHMARK_CAPTURE(BM_ItTraversal_CdcMap, avl_tree, cdc_map_avl));
-S(BENCHMARK_CAPTURE(BM_ItTraversal_CdcMap, treep, cdc_map_treap));
-S(BENCHMARK_CAPTURE(BM_ItTraversal_CdcMap, splay_tree, cdc_map_splay));
 
 static void BM_ItTraversal_CcHashTable(benchmark::State &state)
 {
@@ -623,5 +738,99 @@ static void BM_ItTraversal_GHashTable(benchmark::State &state)
   }
 }
 S(BENCHMARK(BM_ItTraversal_GHashTable));
+
+static void BM_ItTraversal_CdcMap(benchmark::State &state,
+                                  const struct cdc_map_table *table)
+{
+  struct cdc_data_info info = {};
+  info.eq = IsEquil;
+  info.cmp = Less;
+  info.hash = Hash;
+  for (auto _ : state) {
+    state.PauseTiming();
+    struct cdc_map *map = nullptr;
+    cdc_map_ctor(table, &map, &info);
+    RandomSet rs(static_cast<size_t>(state.range(0)));
+    rs.ForEach([=](auto v) {
+      cdc_map_insert(map, CDC_FROM_INT(v), nullptr, nullptr, nullptr);
+    });
+    state.ResumeTiming();
+
+    cdc_map_iter it;
+    cdc_map_iter_ctor(map, &it);
+    cdc_map_begin(map, &it);
+    while (cdc_map_iter_has_next(&it)) {
+      benchmark::DoNotOptimize(cdc_map_iter_value(&it));
+      cdc_map_iter_next(&it);
+    }
+    cdc_map_iter_dtor(&it);
+
+    state.PauseTiming();
+    cdc_map_dtor(map);
+    state.ResumeTiming();
+  }
+}
+S(BENCHMARK_CAPTURE(BM_ItTraversal_CdcMap, hash_table, cdc_map_htable));
+S(BENCHMARK_CAPTURE(BM_ItTraversal_CdcMap, avl_tree, cdc_map_avl));
+S(BENCHMARK_CAPTURE(BM_ItTraversal_CdcMap, treep, cdc_map_treap));
+S(BENCHMARK_CAPTURE(BM_ItTraversal_CdcMap, splay_tree, cdc_map_splay));
+
+static void BM_ItTraversal_CdcHashTable(benchmark::State &state)
+{
+  struct cdc_data_info info = {};
+  info.eq = IsEquil;
+  info.hash = Hash;
+  for (auto _ : state) {
+    state.PauseTiming();
+    struct cdc_hash_table *map = nullptr;
+    cdc_hash_table_ctor(&map, &info);
+    RandomSet rs(static_cast<size_t>(state.range(0)));
+    rs.ForEach([=](auto v) {
+      cdc_hash_table_insert(map, CDC_FROM_INT(v), nullptr, nullptr, nullptr);
+    });
+    state.ResumeTiming();
+
+    cdc_hash_table_iter it;
+    cdc_hash_table_begin(map, &it);
+    while (cdc_hash_table_iter_has_next(&it)) {
+      benchmark::DoNotOptimize(cdc_hash_table_iter_value(&it));
+      cdc_hash_table_iter_next(&it);
+    }
+
+    state.PauseTiming();
+    cdc_hash_table_dtor(map);
+    state.ResumeTiming();
+  }
+}
+S(BENCHMARK(BM_ItTraversal_CdcHashTable));
+
+static void BM_ItTraversal_CdcAvlTree(benchmark::State &state)
+{
+  struct cdc_data_info info = {};
+  info.cmp = Less;
+  void *value = nullptr;
+  for (auto _ : state) {
+    state.PauseTiming();
+    struct cdc_avl_tree *map = nullptr;
+    cdc_avl_tree_ctor(&map, &info);
+    RandomSet rs(static_cast<size_t>(state.range(0)));
+    rs.ForEach([=](auto v) {
+      cdc_avl_tree_insert1(map, CDC_FROM_INT(v), nullptr, nullptr, nullptr);
+    });
+    state.ResumeTiming();
+
+    cdc_avl_tree_iter it;
+    cdc_avl_tree_begin(map, &it);
+    while (cdc_avl_tree_iter_has_next(&it)) {
+      benchmark::DoNotOptimize(cdc_avl_tree_iter_value(&it));
+      cdc_avl_tree_iter_next(&it);
+    }
+
+    state.PauseTiming();
+    cdc_avl_tree_dtor(map);
+    state.ResumeTiming();
+  }
+}
+S(BENCHMARK(BM_ItTraversal_CdcAvlTree));
 
 BENCHMARK_MAIN();

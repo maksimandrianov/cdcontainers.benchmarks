@@ -50,27 +50,6 @@ static void BM_PushBack_CppDeque(benchmark::State &state)
 }
 S(BENCHMARK(BM_PushBack_CppDeque));
 
-static void BM_PushBack_CdcDeque(benchmark::State &state,
-                                 const struct cdc_sequence_table *table)
-{
-  for (auto _ : state) {
-    state.PauseTiming();
-    struct cdc_deque *deque = nullptr;
-    cdc_deque_ctor(table, &deque, nullptr);
-    state.ResumeTiming();
-
-    for (int j = 0; j < state.range(0); ++j) {
-      cdc_deque_push_back(deque, CDC_FROM_INT(GetRandom()));
-    }
-
-    state.PauseTiming();
-    cdc_deque_dtor(deque);
-    state.ResumeTiming();
-  }
-}
-S(BENCHMARK_CAPTURE(BM_PushBack_CdcDeque, circular_array, cdc_seq_carray));
-S(BENCHMARK_CAPTURE(BM_PushBack_CdcDeque, list, cdc_seq_list));
-
 static void BM_PushBack_CcDeque(benchmark::State &state)
 {
   for (auto _ : state) {
@@ -108,6 +87,46 @@ static void BM_PushBack_GQueue(benchmark::State &state)
 }
 S(BENCHMARK(BM_PushBack_GQueue));
 
+static void BM_PushBack_CdcDeque(benchmark::State &state,
+                                 const struct cdc_sequence_table *table)
+{
+  for (auto _ : state) {
+    state.PauseTiming();
+    struct cdc_deque *deque = nullptr;
+    cdc_deque_ctor(table, &deque, nullptr);
+    state.ResumeTiming();
+
+    for (int j = 0; j < state.range(0); ++j) {
+      cdc_deque_push_back(deque, CDC_FROM_INT(GetRandom()));
+    }
+
+    state.PauseTiming();
+    cdc_deque_dtor(deque);
+    state.ResumeTiming();
+  }
+}
+S(BENCHMARK_CAPTURE(BM_PushBack_CdcDeque, circular_array, cdc_seq_carray));
+S(BENCHMARK_CAPTURE(BM_PushBack_CdcDeque, list, cdc_seq_list));
+
+static void BM_PushBack_CdcCircularArray(benchmark::State &state)
+{
+  for (auto _ : state) {
+    state.PauseTiming();
+    struct cdc_circular_array *deque = nullptr;
+    cdc_circular_array_ctor(&deque, nullptr);
+    state.ResumeTiming();
+
+    for (int j = 0; j < state.range(0); ++j) {
+      cdc_circular_array_push_back(deque, CDC_FROM_INT(GetRandom()));
+    }
+
+    state.PauseTiming();
+    cdc_circular_array_dtor(deque);
+    state.ResumeTiming();
+  }
+}
+S(BENCHMARK(BM_PushBack_CdcCircularArray));
+
 // Push front benchmarks:
 static void BM_PushFront_CppDeque(benchmark::State &state)
 {
@@ -126,27 +145,6 @@ static void BM_PushFront_CppDeque(benchmark::State &state)
   }
 }
 S(BENCHMARK(BM_PushFront_CppDeque));
-
-static void BM_PushFront_CdcDeque(benchmark::State &state,
-                                  const struct cdc_sequence_table *table)
-{
-  for (auto _ : state) {
-    state.PauseTiming();
-    struct cdc_deque *deque = nullptr;
-    cdc_deque_ctor(table, &deque, nullptr);
-    state.ResumeTiming();
-
-    for (int j = 0; j < state.range(0); ++j) {
-      cdc_deque_push_front(deque, CDC_FROM_INT(GetRandom()));
-    }
-
-    state.PauseTiming();
-    cdc_deque_dtor(deque);
-    state.ResumeTiming();
-  }
-}
-S(BENCHMARK_CAPTURE(BM_PushFront_CdcDeque, circular_array, cdc_seq_carray));
-S(BENCHMARK_CAPTURE(BM_PushFront_CdcDeque, list, cdc_seq_list));
 
 static void BM_PushFront_CcDeque(benchmark::State &state)
 {
@@ -185,6 +183,46 @@ static void BM_PushFront_GQueue(benchmark::State &state)
 }
 S(BENCHMARK(BM_PushFront_GQueue));
 
+static void BM_PushFront_CdcDeque(benchmark::State &state,
+                                  const struct cdc_sequence_table *table)
+{
+  for (auto _ : state) {
+    state.PauseTiming();
+    struct cdc_deque *deque = nullptr;
+    cdc_deque_ctor(table, &deque, nullptr);
+    state.ResumeTiming();
+
+    for (int j = 0; j < state.range(0); ++j) {
+      cdc_deque_push_front(deque, CDC_FROM_INT(GetRandom()));
+    }
+
+    state.PauseTiming();
+    cdc_deque_dtor(deque);
+    state.ResumeTiming();
+  }
+}
+S(BENCHMARK_CAPTURE(BM_PushFront_CdcDeque, circular_array, cdc_seq_carray));
+S(BENCHMARK_CAPTURE(BM_PushFront_CdcDeque, list, cdc_seq_list));
+
+static void BM_PushFront_CdcCircularArray(benchmark::State &state)
+{
+  for (auto _ : state) {
+    state.PauseTiming();
+    struct cdc_circular_array *deque = nullptr;
+    cdc_circular_array_ctor(&deque, nullptr);
+    state.ResumeTiming();
+
+    for (int j = 0; j < state.range(0); ++j) {
+      cdc_circular_array_push_front(deque, CDC_FROM_INT(GetRandom()));
+    }
+
+    state.PauseTiming();
+    cdc_circular_array_dtor(deque);
+    state.ResumeTiming();
+  }
+}
+S(BENCHMARK(BM_PushFront_CdcCircularArray));
+
 // Insert rand pos benchmarks:
 static void BM_InsertRandPos_CppDeque(benchmark::State &state)
 {
@@ -205,30 +243,6 @@ static void BM_InsertRandPos_CppDeque(benchmark::State &state)
   }
 }
 S(BENCHMARK(BM_InsertRandPos_CppDeque));
-
-static void BM_InsertRandPos_CdcDeque(benchmark::State &state,
-                                      const struct cdc_sequence_table *table)
-{
-  for (auto _ : state) {
-    state.PauseTiming();
-    struct cdc_deque *deque = nullptr;
-    cdc_deque_ctorl(table, &deque, nullptr, CDC_FROM_INT(1), CDC_FROM_INT(2),
-                    CDC_FROM_INT(3), CDC_FROM_INT(4), CDC_FROM_INT(5), CDC_END);
-    state.ResumeTiming();
-
-    for (int j = 0; j < state.range(0); ++j) {
-      cdc_deque_insert(deque, GetRandomPos(cdc_deque_size(deque)),
-                       CDC_FROM_INT(GetRandom()));
-    }
-
-    state.PauseTiming();
-    cdc_deque_dtor(deque);
-    deque = nullptr;
-    state.ResumeTiming();
-  }
-}
-S(BENCHMARK_CAPTURE(BM_InsertRandPos_CdcDeque, circular_array, cdc_seq_carray));
-S(BENCHMARK_CAPTURE(BM_InsertRandPos_CdcDeque, list, cdc_seq_list));
 
 static void BM_InsertRandPos_CcDeque(benchmark::State &state)
 {
@@ -275,5 +289,53 @@ static void BM_InsertRandPos_GQueue(benchmark::State &state)
   }
 }
 S(BENCHMARK(BM_InsertRandPos_GQueue));
+
+static void BM_InsertRandPos_CdcDeque(benchmark::State &state,
+                                      const struct cdc_sequence_table *table)
+{
+  for (auto _ : state) {
+    state.PauseTiming();
+    struct cdc_deque *deque = nullptr;
+    cdc_deque_ctorl(table, &deque, nullptr, CDC_FROM_INT(1), CDC_FROM_INT(2),
+                    CDC_FROM_INT(3), CDC_FROM_INT(4), CDC_FROM_INT(5), CDC_END);
+    state.ResumeTiming();
+
+    for (int j = 0; j < state.range(0); ++j) {
+      cdc_deque_insert(deque, GetRandomPos(cdc_deque_size(deque)),
+                       CDC_FROM_INT(GetRandom()));
+    }
+
+    state.PauseTiming();
+    cdc_deque_dtor(deque);
+    deque = nullptr;
+    state.ResumeTiming();
+  }
+}
+S(BENCHMARK_CAPTURE(BM_InsertRandPos_CdcDeque, circular_array, cdc_seq_carray));
+S(BENCHMARK_CAPTURE(BM_InsertRandPos_CdcDeque, list, cdc_seq_list));
+
+static void BM_InsertRandPos_CdcCircularArray(benchmark::State &state)
+{
+  for (auto _ : state) {
+    state.PauseTiming();
+    struct cdc_circular_array *deque = nullptr;
+    cdc_circular_array_ctorl(&deque, nullptr, CDC_FROM_INT(1), CDC_FROM_INT(2),
+                             CDC_FROM_INT(3), CDC_FROM_INT(4), CDC_FROM_INT(5),
+                             CDC_END);
+    state.ResumeTiming();
+
+    for (int j = 0; j < state.range(0); ++j) {
+      cdc_circular_array_insert(deque,
+                                GetRandomPos(cdc_circular_array_size(deque)),
+                                CDC_FROM_INT(GetRandom()));
+    }
+
+    state.PauseTiming();
+    cdc_circular_array_dtor(deque);
+    deque = nullptr;
+    state.ResumeTiming();
+  }
+}
+S(BENCHMARK(BM_InsertRandPos_CdcCircularArray));
 
 BENCHMARK_MAIN();

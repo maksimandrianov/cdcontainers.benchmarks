@@ -4,6 +4,7 @@ import json
 import os
 import sys
 
+from cycler import cycler
 from matplotlib import pyplot as plt
 
 
@@ -15,6 +16,15 @@ def main():
     filenames = filter(None, sys.argv[1].split(":"))
     display_graphs = int(sys.argv[2])
 
+    num_colors = 12
+    cm = plt.get_cmap("gist_rainbow")
+    styles = ['--', ':']
+    count = int(num_colors / len(styles))
+    styles = styles * count + styles[0: num_colors - count * len(styles)]
+    plt.rc("axes", prop_cycle=(
+            cycler(color=[cm(1.0 * i / num_colors) for i in range(num_colors)]) +
+            cycler(linestyle=styles)))
+
     for filename in filenames:
         with open(filename) as f:
             raw = json.load(f)
@@ -22,6 +32,7 @@ def main():
             grouped_benchmarks = collections.defaultdict(
                 lambda: collections.defaultdict(dict)
             )
+
             for bench in benchmarks:
                 first, last = bench["name"].rsplit("/", maxsplit=1)
                 if "threads" in last:
