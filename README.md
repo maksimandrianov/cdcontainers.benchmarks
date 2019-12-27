@@ -1,6 +1,6 @@
-# cdcontainers.benchmarks
+# [cdcontainers](https://github.com/maksimandrianov/cdcontainers).benchmarks
 
-Benchmarks for [cdcontainers](https://maksimandrianov.github.io/cdcontainers.github.io/) library.
+Benchmarks for [cdcontainers](https://github.com/maksimandrianov/cdcontainers) library.
 
 ## Equipment
 Benchmarks run on the system:
@@ -20,6 +20,11 @@ CPU:       Quad core Intel Core i7-7820HQ (-MT-MCP-) cache: 8192 KB
            7: 900 MHz 8: 900 MHz
 ```
 
+Competitors:
+* [cdcontainers](https://github.com/maksimandrianov/cdcontainers). Names start with `Cdc` prefix.
+* [Collections-C](https://github.com/srdja/Collections-C). Names start with `Cc` prefix.
+* [GNOME/glib](https://github.com/GNOME/glib). Names start with `G` prefix.
+* C++ standard library. Names start with `Cpp` prefix.
 
 ## Deque
 
